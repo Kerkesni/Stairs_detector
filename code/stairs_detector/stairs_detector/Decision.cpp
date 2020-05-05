@@ -104,7 +104,7 @@ bool isOnTop(vector<Point> p0, vector<Point> p1) {
 // or -0.01 if the number of squares detected is not enought to decide
 float isStairs(const vector<vector<Point> >& squares) {
 
-	float coef = 0.7;
+	float coef = 0.9;
 
 	int total = 0;
 	float res = 0;

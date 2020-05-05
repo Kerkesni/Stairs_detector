@@ -1,20 +1,5 @@
 #include "squares.h"
 
-Mat gammaCorrection(const Mat &img, const double gamma_)
-{
-	CV_Assert(gamma_ >= 0);
-	//! [changing-contrast-brightness-gamma-correction]
-	Mat lookUpTable(1, 256, CV_8U);
-	uchar* p = lookUpTable.ptr();
-	for (int i = 0; i < 256; ++i)
-		p[i] = saturate_cast<uchar>(pow(i / 255.0, gamma_) * 255.0);
-
-	Mat res = img.clone();
-	LUT(img, lookUpTable, res);
-	//! [changing-contrast-brightness-gamma-correction]
-	return res;
-}
-
 // finds a cosine of angle between vectors
 // from pt0->pt1 and from pt0->pt2
 double angle(Point pt1, Point pt2, Point pt0)
@@ -40,10 +25,10 @@ float getArea(vector<Point> vp) {
 // the sequence is stored in the specified memory storage
 void findSquares(const Mat& image, vector<vector<Point> >& squares)
 {
-	int thresh = 15;
-	int N = 2;
+	Mat src = image.clone();
+	int N = 10;
 	// accespted angle between rectangle vertecies
-	float cosAngle = 0.8;
+	float cosAngle = 0.2;
 	// rectange area related variables
 	float accumulator_areas = 0;
 	float acc_index = 0;
@@ -51,37 +36,23 @@ void findSquares(const Mat& image, vector<vector<Point> >& squares)
 	float Hcoef = 2;
 	// temporary variables
 	vector <vector<Point>> tmp_squares;
-
-	squares.clear();
-	
-	// Correct gamma level
-	//gammaCorrection(image, 0.1);
-
-	// blur to enhance edge detection
-	Mat timg = image.clone();
-	medianBlur(image, timg, 9);
-	Mat gray(timg.size(), CV_8U);
 	vector<vector<Point> > contours;
 
-
-	int ch[] = { 0, 0 };
-	mixChannels(&image, 1, &gray, 1, ch, 1);
+	squares.clear();
 
 	// Apply N times to maximise the chances of finding a rectangle
 	for (int j = 0; j < N; j++) {
-		// apply Canny. Take the upper threshold from slider
-		// and set the lower to 0 (which forces edges merging)
-		Canny(gray, gray, 5, thresh, 5);
+
 		// dilate canny output to remove potential
 		// holes between edge segments
-		dilate(gray, gray, Mat(), Point(-1, -1));
+		dilate(src, src, Mat(), Point(-1, -1));
 
 		// find contours and store them all as a list
-		findContours(gray, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+		findContours(src, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 
 		vector<Point> approx;
 
-		// test each contour
+		// test each contour (contour == object)
 		for (size_t i = 0; i < contours.size(); i++)
 		{
 			// approximate contour with accuracy proportional
@@ -118,7 +89,14 @@ void findSquares(const Mat& image, vector<vector<Point> >& squares)
 			}
 		}
 		//storing all the rectangles found
-		squares.insert(squares.begin(), tmp_squares.begin(), tmp_squares.end());
+		//squares.insert(squares.begin(), tmp_squares.begin(), tmp_squares.end());
+		//we only store the most amount of squares found in one iteration
+		//we do this to avoid rectangle duplication problem
+		//cause that affects the decision
+		if (squares.size() < tmp_squares.size()) {
+			squares = tmp_squares;
+			tmp_squares.clear();
+		}
 
 	}
 	//we only keep the rectangles in a certain range of size (around the mean of all sizes)

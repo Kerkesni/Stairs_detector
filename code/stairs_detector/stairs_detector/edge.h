@@ -2,4 +2,4 @@
 
 using namespace cv;
 
-Mat hought(Mat src);
+Mat getEdges(Mat src);

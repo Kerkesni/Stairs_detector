@@ -138,14 +138,14 @@
   <ItemGroup>
     <ClCompile Include="Decision.cpp" />
     <ClCompile Include="fourier.cpp" />
-    <ClCompile Include="hough.cpp" />
+    <ClCompile Include="edge.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="squares.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="decision.h" />
     <ClInclude Include="fourier.h" />
-    <ClInclude Include="hough.h" />
+    <ClInclude Include="edge.h" />
     <ClInclude Include="squares.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
