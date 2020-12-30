@@ -1,6 +1,6 @@
 # Stairs_detector
 ## What This Project is About ?
-This project contains code made in C++ that allows the detection stair steps using traditional image proccessing techniques.
+This project contains code made in C++ that allows the detection of stair steps using traditional image proccessing techniques.
 
 ## Type of Images Used
 The images used for this poject have the following characteristics:
